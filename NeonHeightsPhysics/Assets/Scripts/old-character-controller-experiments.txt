@@ -1,0 +1,1366 @@
+public void NewNewNewUpdate()
+    {
+        DrawBoundingRect();
+        prevPosition = transform.position;
+
+        rightCollision = null;
+        leftCollision = null;
+        bottomCollision = null;
+        topCollision = null;
+
+        switch (currentState)
+        {
+            default:
+            case (CharacterState.Idle):
+                {
+                    CheckCollisionsBottom();
+                    ApplyVerticalCollisions();
+                    if (!grounded)
+                    {
+                        currentState = CharacterState.Fall;
+                        break;
+                    }
+
+                    if (Input.GetKey(KeyCode.A))
+                    {
+                        velocity.x = -1 * baseRunSpeed;
+                        currentState = CharacterState.Run;
+                    }
+                    else if (Input.GetKey(KeyCode.D))
+                    {
+                        velocity.x = baseRunSpeed;
+                        currentState = CharacterState.Run;
+                    }
+                    if (Input.GetKeyDown(KeyCode.Space))
+                    {
+                        velocity.y = baseJumpVelocity;
+                        currentState = CharacterState.Jump;
+                        grounded = false;
+                        break;
+                    }
+                    break;
+                }
+            case (CharacterState.Run):
+                {
+                    CheckCollisionsBottom();
+                    ApplyVerticalCollisions();
+                    if (!grounded)
+                    {
+                        currentState = CharacterState.Fall;
+                        break;
+                    }
+                    if (!Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.D))
+                    {
+                        velocity.x = 0;
+                        currentState = CharacterState.Idle;
+                        break;
+                    }
+                    if (Input.GetKeyDown(KeyCode.Space))
+                    {
+                        velocity.y = baseJumpVelocity;
+                        currentState = CharacterState.Jump;
+                        grounded = false;
+                        break;
+                    }
+
+                    if (Input.GetKey(KeyCode.A))
+                    {
+                        velocity.x = -1 * baseRunSpeed;
+                        CheckCollisionsLeft();
+                        if (leftCollision != null && leftCollision.segment.angleFromHorizontalDegrees > groundAngleLimit)
+                        {
+                            currentState = CharacterState.Idle;
+                            ApplyHorizontalCollisions();
+                        }
+                        else
+                        {
+                            ApplyVelocityX();
+                        }
+                    }
+                    else if (Input.GetKey(KeyCode.D))
+                    {
+                        velocity.x = baseRunSpeed;
+                        CheckCollisionsRight();
+                        if (rightCollision != null && rightCollision.segment.angleFromHorizontalDegrees > groundAngleLimit)
+                        {
+                            currentState = CharacterState.Idle;
+                            ApplyHorizontalCollisions();
+                        }
+                        else
+                        {
+                            ApplyVelocityX();
+                        }
+                    }
+                    break;
+                }
+
+            case (CharacterState.AscendSlope):
+                {
+                    break;
+                }
+
+            case (CharacterState.DescendSlope):
+                {
+                    break;
+                }
+
+            case (CharacterState.Jump):
+                {
+                    ApplyGravity();
+                    CheckCollisionsTop();
+                    if (topCollision != null)
+                    {
+                        ApplyVerticalCollisions();
+                        velocity.y = 0;
+                        currentState = CharacterState.Fall;
+                        break;
+                    }
+                    else
+                    {
+                        ApplyVelocityY();
+                    }
+
+                    if (Input.GetKey(KeyCode.A))
+                    {
+                        velocity.x = -1 * baseRunSpeed;
+                        CheckCollisionsLeft();
+                        if (leftCollision != null)
+                        {
+                            ApplyHorizontalCollisions();
+                        }
+                        else
+                        {
+                            ApplyVelocityY();
+                        }
+                    }
+                    else if (Input.GetKey(KeyCode.D))
+                    {
+                        velocity.x = baseRunSpeed;
+                        CheckCollisionsRight();
+                        if (rightCollision != null)
+                        {
+                            ApplyHorizontalCollisions();
+                        }
+                        else
+                        {
+                            ApplyVelocityY();
+                        }
+                    }
+
+                    if (velocity.y <= 0)
+                    {
+                        currentState = CharacterState.Fall;
+                        break;
+                    }
+                    break;
+                }
+            case (CharacterState.Fall):
+                {
+                    ApplyGravity();
+                    CheckCollisionsBottom();
+                    if (bottomCollision != null)
+                    {
+                        ApplyVerticalCollisions();
+                    }
+                    else
+                    {
+                        ApplyVelocityY();
+                    }
+
+                    if (Input.GetKey(KeyCode.A))
+                    {
+                        velocity.x = -1 * baseRunSpeed;
+                        CheckCollisionsLeft();
+                        if (leftCollision != null)
+                        {
+                            ApplyHorizontalCollisions();
+                        }
+                        else
+                        {
+                            ApplyVelocityY();
+                        }
+                    }
+                    else if (Input.GetKey(KeyCode.D))
+                    {
+                        velocity.x = baseRunSpeed;
+                        CheckCollisionsRight();
+                        if (rightCollision != null)
+                        {
+                            ApplyHorizontalCollisions();
+                        }
+                        else
+                        {
+                            ApplyVelocityY();
+                        }
+                    }
+
+                    if (grounded)
+                    {
+                        currentState = CharacterState.Idle;
+                    }
+                    break;
+                }
+        }
+
+        trueVelocity = (new Vector2(transform.position.x, transform.position.y) - prevPosition) / Time.deltaTime;
+        trueSpeed = trueVelocity.magnitude;
+
+        UpdateCollisionRect();
+    }
+
+    public void NewNewUpdate()
+    {
+        DrawBoundingRect();
+        previousSlopeAngle = slopeAngle;
+        prevAscendingSlope = ascendingSlope;
+        prevDescendingSlope = descendingSlope;
+        prevPosition = transform.position;
+
+        rightCollision = null;
+        leftCollision = null;
+        bottomCollision = null;
+        topCollision = null;
+
+        if (Input.GetKey(KeyCode.R))
+        {
+            transform.position = new Vector2(-14.65f, 5.54f);
+            velocity = Vector2.zero;
+        }
+
+        switch (currentState)
+        {
+            default:
+            case (CharacterState.Idle):
+                {
+                    CheckCollisionsBottom();
+                    CheckCollisionsTop();
+                    ApplyVerticalCollisions();
+                    ApplyHorizontalCollisions();
+
+                    grounded = bottomCollision != null && transform.position.y + yOffset == bottomCollision.collisionPosition.y && bottomCollision.segment.angleFromHorizontalDegrees <= groundAngleLimit;
+
+                    if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.D))
+                    {
+                        currentState = CharacterState.Run;
+                        break;
+                    }
+
+                    if (Input.GetKeyDown(KeyCode.Space) && grounded)
+                    {
+                        velocity.y = baseJumpVelocity;
+                        currentState = CharacterState.Jump;
+                        grounded = false;
+                        break;
+                    }
+
+                    if (velocity.y > 0)
+                    {
+                        currentState = CharacterState.Jump;
+                        grounded = false;
+                        break;
+                    }
+
+                    if (velocity.y < 0 || !grounded)
+                    {
+                        currentState = CharacterState.Fall;
+                        grounded = false;
+                        break;
+                    }
+
+                    break;
+                }
+            case (CharacterState.Run):
+                {
+                    if (Input.GetKey(KeyCode.A))
+                    {
+                        velocity.x = -1 * baseRunSpeed;
+                    }
+                    if (Input.GetKey(KeyCode.D))
+                    {
+                        velocity.x = baseRunSpeed;
+                    }
+                    if (Input.GetKeyDown(KeyCode.Space))
+                    {
+                        velocity.y = baseJumpVelocity;
+                        currentState = CharacterState.Jump;
+                        grounded = false;
+                        break;
+                    }
+                    if (!Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.D))
+                    {
+                        velocity.x = 0;
+                        velocity.y = 0;
+                        currentState = CharacterState.Idle;
+                        break;
+                    }
+                    if (!grounded)
+                    {
+                        currentState = CharacterState.Fall;
+                        break;
+                    }
+
+                    CheckCollisionsBottom();
+                    if (bottomCollision != null)
+                    {
+                        slopeAngle = bottomCollision.segment.angleFromHorizontalDegrees;
+                    }
+
+                    if (onFlatGround)
+                    {
+                        slopeAngle = 0;
+                    }
+                    CheckCollisionsRight();
+                    CheckCollisionsLeft();
+                    if (rightCollision != null && rightCollision.segment.angleFromHorizontalDegrees > groundAngleLimit)
+                    {
+                        velocity.x = 0;
+                        velocity.y = 0;
+                        ApplyHorizontalCollisions();
+                        ApplyVerticalCollisions();
+                        break;
+                    }
+                    else if (rightCollision == null && velocity.x > 0)
+                    {
+                        velocity.y = 0;
+                        CheckCollisionsBottom();
+                        ApplyVerticalCollisions();
+                        if (bottomCollision != null)
+                        {
+                            velocity.y = bottomCollision.segment.rightPointingTangent.y * baseRunSpeed;
+                            velocity.x = bottomCollision.segment.rightPointingTangent.x * baseRunSpeed;
+                            ApplyVelocityToTransform();
+                            grounded = true;
+                        }
+                    }
+                    else if (leftCollision != null && leftCollision.segment.angleFromHorizontalDegrees > groundAngleLimit)
+                    {
+                        velocity.x = 0;
+                        velocity.y = 0;
+                        ApplyHorizontalCollisions();
+                        ApplyVerticalCollisions();
+                        break;
+                    }
+                    else if (leftCollision == null && velocity.x < 0)
+                    {
+                        velocity.y = 0;
+                        CheckCollisionsBottom();
+                        ApplyVerticalCollisions();
+                        if (bottomCollision != null)
+                        {
+                            velocity.y = bottomCollision.segment.leftPointingTangent.y * baseRunSpeed;
+                            velocity.x = bottomCollision.segment.leftPointingTangent.x * baseRunSpeed;
+                            ApplyVelocityToTransform();
+                            grounded = true;
+                        }
+                    }
+                    else if (slopeAngle <= groundAngleLimit)
+                    {
+                        if (onFlatGround)
+                        {
+                            velocity.x = baseRunSpeed * Mathf.Sign(velocity.x);
+                            velocity.y = 0;
+                        }
+                        else
+                        {
+                            velocity.x = bottomCollision.segment.rightPointingTangent.x * baseRunSpeed * Mathf.Sign(velocity.x);
+                            velocity.y = bottomCollision.segment.rightPointingTangent.y * baseRunSpeed;
+                        }
+                        CheckCollisionsTop();
+                        if (topCollision != null)
+                        {
+                            velocity = Vector2.zero;
+                        }
+                        else
+                        {
+                            ApplyVelocityX();
+                            CheckCollisionsBottom();
+                            ApplyVerticalCollisions();
+                        }
+                        grounded = true;
+                    }
+
+                    break;
+
+                    //Moving to the right
+                    if (velocity.x > 0)
+                    {
+                        CheckCollisionsRight();
+
+                        if (rightCollision != null && rightCollision.segment.angleFromHorizontalDegrees <= groundAngleLimit)
+                        {
+                            velocity.x = 0;
+                            ApplyHorizontalCollisions();
+                            //the move up the slope
+                            velocity.y = rightCollision.segment.rightPointingTangent.y * baseRunSpeed;
+                            velocity.x = rightCollision.segment.rightPointingTangent.x * baseRunSpeed;
+
+                            CheckCollisionsTop();
+                            if (topCollision == null)
+                            {
+                                ApplyVelocityToTransform();
+                            }
+                            break;
+                            // ascendingSlope = true;
+                            // descendingSlope = false;
+                            // grounded = true;
+                        }
+                        else if (rightCollision != null && rightCollision.segment.angleFromHorizontalDegrees > groundAngleLimit)
+                        {
+                            ApplyHorizontalCollisions();
+                            velocity.x = 0;
+                            velocity.y = 0;
+                            break;
+                        }
+                        else if (rightCollision == null)
+                        {
+                            velocity.y = 0;
+                            CheckCollisionsBottom();
+                            ApplyVerticalCollisions();
+                            if (bottomCollision != null)
+                            {
+                                velocity.y = bottomCollision.segment.rightPointingTangent.y * baseRunSpeed;
+                                velocity.x = bottomCollision.segment.rightPointingTangent.x * baseRunSpeed;
+                                ApplyVelocityToTransform();
+                            }
+                        }
+                    }
+                    else if (velocity.x < 0)
+                    {
+                        CheckCollisionsLeft();
+
+                        if (leftCollision != null && leftCollision.segment.angleFromHorizontalDegrees <= groundAngleLimit)
+                        {
+                            velocity.x = 0;
+                            ApplyHorizontalCollisions();
+                            //the move up the slope
+                            velocity.y = leftCollision.segment.leftPointingTangent.y * baseRunSpeed;
+                            velocity.x = leftCollision.segment.leftPointingTangent.x * baseRunSpeed;
+
+                            CheckCollisionsTop();
+                            if (topCollision == null)
+                            {
+                                ApplyVelocityToTransform();
+                            }
+                            break;
+                        }
+                        else if (leftCollision != null && leftCollision.segment.angleFromHorizontalDegrees > groundAngleLimit)
+                        {
+                            velocity.x = 0;
+                            velocity.y = 0;
+                            ApplyHorizontalCollisions();
+                            break;
+                        }
+                        else if (leftCollision == null)
+                        {
+                            velocity.y = 0;
+                            CheckCollisionsBottom();
+                            ApplyVerticalCollisions();
+                            if (bottomCollision != null)
+                            {
+                                velocity.y = bottomCollision.segment.leftPointingTangent.y * baseRunSpeed;
+                                velocity.x = bottomCollision.segment.leftPointingTangent.x * baseRunSpeed;
+                                ApplyVelocityToTransform();
+                            }
+                        }
+                    }
+
+                    break;
+                }
+
+            case (CharacterState.Jump):
+                {
+                    ApplyGravity();
+                    if (Input.GetKey(KeyCode.A))
+                    {
+                        velocity.x = -1 * baseRunSpeed;
+                    }
+                    if (Input.GetKey(KeyCode.D))
+                    {
+                        velocity.x = baseRunSpeed;
+                    }
+                    if (!Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.D))
+                    {
+                        velocity.x = 0;
+                    }
+
+                    if (velocity.y < 0)
+                    {
+                        currentState = CharacterState.Fall;
+                        break;
+                    }
+
+
+                    if (velocity.x > 0)
+                    {
+                        CheckCollisionsRight();
+                        if (rightCollision != null && rightCollision.segment.angleFromHorizontalDegrees <= groundAngleLimit)
+                        {
+                            currentState = CharacterState.Run;
+                            break;
+                        }
+                        else if (rightCollision != null && rightCollision.segment.angleFromHorizontalDegrees > groundAngleLimit)
+                        {
+                            ApplyHorizontalCollisions();
+                            float speed = velocity.y;
+                            velocity.x = rightCollision.segment.rightPointingTangent.x * speed;
+                            velocity.y = rightCollision.segment.rightPointingTangent.y * speed;
+                            CheckCollisionsTop();
+                            if (topCollision == null)
+                            {
+                                ApplyVelocityToTransform();
+                            }
+                            else
+                            {
+                                ApplyVerticalCollisions();
+                                velocity.y = 0;
+                                currentState = CharacterState.Fall;
+                            }
+                            break;
+                        }
+                        else if (rightCollision == null)
+                        {
+                            CheckCollisionsTop();
+                            if (topCollision != null)
+                            {
+                                ApplyVerticalCollisions();
+                                velocity.y = 0;
+                            }
+                            ApplyVelocityToTransform();
+                        }
+                    }
+                    else if (velocity.x < 0)
+                    {
+                        CheckCollisionsLeft();
+                        if (leftCollision != null && leftCollision.segment.angleFromHorizontalDegrees <= groundAngleLimit)
+                        {
+                            currentState = CharacterState.Run;
+                            break;
+                        }
+                        else if (leftCollision != null && leftCollision.segment.angleFromHorizontalDegrees > groundAngleLimit)
+                        {
+                            ApplyHorizontalCollisions();
+                            float speed = velocity.y;
+                            velocity.x = leftCollision.segment.leftPointingTangent.x * speed;
+                            velocity.y = leftCollision.segment.leftPointingTangent.y * speed;
+                            CheckCollisionsTop();
+                            if (topCollision == null)
+                            {
+                                ApplyVelocityToTransform();
+                            }
+                            else
+                            {
+                                ApplyVerticalCollisions();
+                                velocity.y = 0;
+                                currentState = CharacterState.Fall;
+                            }
+                            break;
+                        }
+                        else if (leftCollision == null)
+                        {
+                            CheckCollisionsTop();
+                            if (topCollision != null)
+                            {
+                                ApplyVerticalCollisions();
+                                velocity.y = 0;
+                            }
+                            ApplyVelocityToTransform();
+                        }
+                    }
+                    else
+                    {
+                        CheckCollisionsTop();
+                        if (topCollision != null)
+                        {
+                            velocity.y = 0;
+                        }
+                        ApplyVelocityToTransform();
+                    }
+
+                    break;
+                }
+
+            case (CharacterState.Fall):
+                {
+                    ApplyGravity();
+
+                    if (Input.GetKey(KeyCode.A))
+                    {
+                        velocity.x = -1 * baseRunSpeed;
+                    }
+                    if (Input.GetKey(KeyCode.D))
+                    {
+                        velocity.x = baseRunSpeed;
+                    }
+                    if (!Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.D))
+                    {
+                        velocity.x = 0;
+                    }
+
+                    if (velocity.y > 0)
+                    {
+                        currentState = CharacterState.Jump;
+                        break;
+                    }
+
+                    CheckCollisionsLeft();
+                    CheckCollisionsRight();
+                    if (rightCollision != null || leftCollision != null)
+                        velocity.x = 0;
+
+                    CheckCollisionsBottom();
+                    if (bottomCollision != null && bottomCollision.segment.angleFromHorizontalDegrees <= groundAngleLimit)
+                    {
+                        ApplyVerticalCollisions();
+                        currentState = CharacterState.Idle;
+                        grounded = true;
+                    }
+                    else if (bottomCollision != null && bottomCollision.segment.angleFromHorizontalDegrees > groundAngleLimit)
+                    {
+
+                        velocity.x = bottomCollision.segment.downPointingTangent.x * Mathf.Abs(velocity.y);
+                        velocity.y = bottomCollision.segment.downPointingTangent.y * Mathf.Abs(velocity.y);
+                        ApplyVelocityY();
+                        CheckCollisionsLeft();
+                        CheckCollisionsRight();
+
+                        if (rightCollision != null || leftCollision != null)
+                            break;
+                        ApplyHorizontalCollisions();
+                    }
+                    else if (bottomCollision == null)
+                    {
+                        ApplyVelocityY();
+                        ApplyVelocityX();
+                    }
+                    break;
+                    if (bottomCollision != null && bottomCollision.segment.angleFromHorizontalDegrees <= groundAngleLimit)
+                    {
+                        ApplyVerticalCollisions();
+                        if (grounded)
+                        {
+                            currentState = CharacterState.Run;
+                        }
+                        break;
+                    }
+                    else if (bottomCollision != null && bottomCollision.segment.angleFromHorizontalDegrees > groundAngleLimit)
+                    {
+                        ApplyHorizontalCollisions();
+                        float speed = Mathf.Abs(velocity.y);
+                        velocity.x = bottomCollision.segment.downPointingTangent.x * speed;
+                        velocity.y = bottomCollision.segment.downPointingTangent.y * speed;
+                        if (velocity.x > 0)
+                        {
+                            CheckCollisionsRight();
+                            if (rightCollision != null && rightCollision.segment.angleFromHorizontalDegrees <= groundAngleLimit)
+                            {
+                                grounded = true;
+                                currentState = CharacterState.Run;
+                                break;
+                            }
+                            else if (rightCollision != null && rightCollision.segment.angleFromHorizontalDegrees > groundAngleLimit)
+                            {
+                                ApplyHorizontalCollisions();
+                                velocity = Vector2.zero;
+                                break;
+                            }
+                            else if (rightCollision == null)
+                            {
+                                ApplyVelocityToTransform();
+                            }
+                        }
+                        else if (velocity.x < 0)
+                        {
+                            CheckCollisionsLeft();
+                            if (leftCollision != null && leftCollision.segment.angleFromHorizontalDegrees <= groundAngleLimit)
+                            {
+                                grounded = true;
+                                currentState = CharacterState.Run;
+                                break;
+                            }
+                            else if (leftCollision != null && leftCollision.segment.angleFromHorizontalDegrees > groundAngleLimit)
+                            {
+                                ApplyHorizontalCollisions();
+                                velocity = Vector2.zero;
+                                break;
+                            }
+                            else if (leftCollision == null)
+                            {
+                                ApplyVelocityToTransform();
+                            }
+                        }
+                    }
+                    else if (bottomCollision == null)
+                    {
+                        if (velocity.x > 0)
+                        {
+                            CheckCollisionsRight();
+                            if (rightCollision != null)
+                            {
+                                ApplyHorizontalCollisions();
+                                velocity.x = 0;
+                            }
+                            ApplyVelocityToTransform();
+                        }
+                        else if (velocity.x < 0)
+                        {
+                            CheckCollisionsLeft();
+                            if (leftCollision != null)
+                            {
+                                ApplyHorizontalCollisions();
+                                velocity.x = 0;
+                            }
+                            ApplyVelocityToTransform();
+                        }
+                        else
+                        {
+                            ApplyVelocityToTransform();
+
+                        }
+                    }
+
+                    break;
+                }
+        }
+
+        trueVelocity = (new Vector2(transform.position.x, transform.position.y) - prevPosition) / Time.deltaTime;
+        UpdateCollisionRect();
+    }
+
+    public void NewUpdate()
+    {
+        DrawBoundingRect();
+        previousSlopeAngle = slopeAngle;
+        prevAscendingSlope = ascendingSlope;
+        prevDescendingSlope = descendingSlope;
+        prevPosition = transform.position;
+
+        if (Input.GetKey(KeyCode.R))
+        {
+            transform.position = new Vector2(-14.65f, 5.54f);
+            velocity = Vector2.zero;
+        }
+
+        switch (currentState)
+        {
+            default:
+            case (CharacterState.Idle):
+                CheckCollisionsBottom();
+                CheckCollisionsTop();
+                ApplyVelocityY();
+                ApplyVerticalCollisions();
+                ascendingSlope = false;
+                descendingSlope = false;
+
+
+                if (Input.GetKey(KeyCode.A))
+                {
+                    velocity.x = -1 * baseRunSpeed;
+                }
+                if (Input.GetKey(KeyCode.D))
+                {
+                    velocity.x = baseRunSpeed;
+                }
+                if (Input.GetKeyDown(KeyCode.Space) && grounded)
+                {
+                    velocity.y = baseJumpVelocity;
+                    ascendingSlope = false;
+                    descendingSlope = false;
+                    grounded = false;
+                }
+
+
+                if (velocity.x != 0)
+                    currentState = CharacterState.Run;
+                if (velocity.y > 0)
+                    currentState = CharacterState.Jump;
+                else if (velocity.y < 0)
+                    currentState = CharacterState.Fall;
+                else if (!grounded)
+                    currentState = CharacterState.Fall;
+
+                break;
+
+            case (CharacterState.Run):
+                CheckCollisionsBottom();
+                CheckCollisionsTop();
+                ApplyVelocityY();
+                ApplyVerticalCollisions();
+
+                if (Input.GetKey(KeyCode.A))
+                {
+                    velocity.x = -1 * baseRunSpeed;
+                }
+                if (Input.GetKey(KeyCode.D))
+                {
+                    velocity.x = baseRunSpeed;
+                }
+
+                CheckCollisionsRight();
+                CheckCollisionsLeft();
+
+                //This is a really weird edge case where a player quickly switches from
+                //ascending a slope to descending. It would originally sometimes make the player just fall
+                //off the slope, not descending it.
+                // if (rightCollision == null && leftCollision == null && bottomCollision == null)
+                // {
+                //     velocity.y = -10;
+                //     CheckCollisionsBottom();
+                //     ApplyVelocityY();
+                //     ApplyVerticalCollisions();
+                // }
+
+                //no LR collision:
+                if (rightCollision == null && leftCollision == null && bottomCollision != null)
+                {
+                    if (prevAscendingSlope && bottomCollision.segment.angleFromHorizontalDegrees != 0)
+                    {
+                        grounded = true;
+                    }
+                    //moving on ground, could be descending a slope
+                    slopeAngle = bottomCollision.segment.angleFromHorizontalDegrees;
+                    Vector2 tangent = bottomCollision.segment.rightPointingTangent;
+                    if (velocity.x < 0)
+                    {
+                        tangent = bottomCollision.segment.leftPointingTangent;
+                    }
+                    float moveDistance = Mathf.Abs(baseRunSpeed);
+                    float descendVelocityY = tangent.y * moveDistance;
+                    velocity.y = descendVelocityY;
+                    velocity.x = tangent.x * moveDistance;
+                    ascendingSlope = false;
+                    descendingSlope = true;
+                    grounded = true;
+                    // if (velocity.y != 0 && velocity.y > descendVelocityY)
+                    // {
+                    //     ascendingSlope = false;
+                    //     descendingSlope = false;
+                    //     grounded = false;
+                    // }
+                    // else
+                    // {
+                    //     velocity.y = descendVelocityY;
+                    //     velocity.x = tangent.x * moveDistance;
+                    //     ascendingSlope = false;
+                    //     descendingSlope = true;
+                    //     grounded = true;
+                    // }
+
+                    if (bottomCollision.segment.angleFromHorizontalDegrees == 0)
+                    {
+                        ascendingSlope = false;
+                        descendingSlope = false;
+                    }
+
+                    ApplyVelocityX();
+                }
+                //Right collision with climbable slope
+                else if (rightCollision != null && rightCollision.segment.angleFromHorizontalDegrees <= groundAngleLimit)
+                {
+                    //if we dont hit a cieling
+                    if (topCollision == null)
+                    {
+                        if (!ascendingSlope)
+                        {
+                            Debug.Log("www");
+                        }
+                        ApplyHorizontalCollisions();
+                        transform.position = new Vector2(transform.position.x, Mathf.Max(transform.position.y + yOffset, rightCollision.collisionPosition.y) - yOffset);
+
+                        //the move up the slope
+                        float ascendVelocityY = rightCollision.segment.rightPointingTangent.y * baseRunSpeed;
+                        //if our Y velocity is really high (we are jumping), then jump and dont climb the slope
+                        if (velocity.y <= ascendVelocityY)
+                        {
+                            velocity.y = ascendVelocityY;
+                            velocity.x = rightCollision.segment.rightPointingTangent.x * baseRunSpeed;
+                            ascendingSlope = true;
+                            descendingSlope = false;
+                            grounded = true;
+                        }
+                        else
+                        {
+                            ascendingSlope = false;
+                            grounded = false;
+                        }
+                    }
+                    ApplyVelocityX();
+                }
+
+                //Left collision with climbable slope
+                else if (leftCollision != null && leftCollision.segment.angleFromHorizontalDegrees <= groundAngleLimit)
+                {
+                    //if we dont hit a cieling
+                    if (topCollision == null)
+                    {
+                        if (!ascendingSlope)
+                        {
+                            Debug.Log("www");
+                        }
+                        ApplyHorizontalCollisions();
+                        transform.position = new Vector2(transform.position.x, Mathf.Max(transform.position.y + yOffset, leftCollision.collisionPosition.y) - yOffset);
+
+                        //the move up the slope
+                        float ascendVelocityY = leftCollision.segment.leftPointingTangent.y * baseRunSpeed;
+                        //if our Y velocity is really high (we are jumping), then jump and dont climb the slope
+                        if (velocity.y <= ascendVelocityY)
+                        {
+                            velocity.y = ascendVelocityY;
+                            velocity.x = leftCollision.segment.leftPointingTangent.x * baseRunSpeed;
+                            ascendingSlope = true;
+                            descendingSlope = false;
+                            grounded = true;
+                        }
+                        else
+                        {
+                            ascendingSlope = false;
+                            grounded = false;
+                        }
+                    }
+                    ApplyVelocityX();
+                }
+
+                //Right collision with solid wall
+                else if (rightCollision != null && rightCollision.segment.angleFromHorizontalDegrees > groundAngleLimit)
+                {
+                    if (prevAscendingSlope || prevDescendingSlope)
+                    {
+                        velocity.y = 0;
+                    }
+                    ApplyVelocityX();
+                    ApplyHorizontalCollisions();
+                }
+                //Left collision with solid wall
+                else if (leftCollision != null && leftCollision.segment.angleFromHorizontalDegrees > groundAngleLimit)
+                {
+                    if (prevAscendingSlope || prevDescendingSlope)
+                        velocity.y = 0;
+                    ApplyVelocityX();
+                    ApplyHorizontalCollisions();
+                }
+
+
+                if (!Input.GetKey(KeyCode.D) && !Input.GetKey(KeyCode.A))
+                {
+                    velocity.x = 0;
+                    ascendingSlope = false;
+                    descendingSlope = false;
+                    if (ascendingSlope || prevAscendingSlope || descendingSlope || prevDescendingSlope)
+                    {
+                        velocity.y = 0;
+                    }
+                    currentState = CharacterState.Idle;
+                }
+                if (Input.GetKeyDown(KeyCode.Space) && grounded)
+                {
+                    velocity.y = baseJumpVelocity;
+                    ascendingSlope = false;
+                    descendingSlope = false;
+                    grounded = false;
+                }
+
+                if (rightCollision == null && leftCollision == null && bottomCollision == null)
+                {
+                    Debug.Log("STOPPED ASC AND STARTED DEC");
+                }
+
+                if (velocity.y > 0 && !grounded)
+                {
+                    currentState = CharacterState.Jump;
+                }
+                else if (velocity.y < 0 && !grounded)
+                {
+                    currentState = CharacterState.Fall;
+                }
+
+                if (prevAscendingSlope && !ascendingSlope)
+                {
+                    Debug.Log("STOPPED ASCENDING");
+                }
+
+                if (prevDescendingSlope && !descendingSlope)
+                {
+                    Debug.Log("STOPPED DESCENDING");
+                }
+
+                if (descendingSlope && prevAscendingSlope)
+                {
+                    Debug.Log("STOPPED ASC AND STARTED DEC");
+                }
+
+                break;
+
+            case (CharacterState.Jump):
+                ApplyGravity();
+                CheckCollisionsBottom();
+                CheckCollisionsTop();
+                ApplyVelocityY();
+                ApplyVerticalCollisions();
+                ascendingSlope = false;
+                descendingSlope = false;
+
+                if (Input.GetKey(KeyCode.A))
+                {
+                    velocity.x = -1 * baseRunSpeed;
+                }
+                if (Input.GetKey(KeyCode.D))
+                {
+                    velocity.x = baseRunSpeed;
+                }
+
+                CheckCollisionsRight();
+                CheckCollisionsLeft();
+                ApplyVelocityX();
+                ApplyHorizontalCollisions();
+
+
+                if (velocity.y < 0)
+                    currentState = CharacterState.Fall;
+                if (grounded)
+                    currentState = CharacterState.Idle;
+                break;
+
+            case (CharacterState.Fall):
+                ApplyGravity();
+                CheckCollisionsBottom();
+                CheckCollisionsTop();
+                ApplyVelocityY();
+                ApplyVerticalCollisions();
+                ascendingSlope = false;
+                descendingSlope = false;
+
+                if (Input.GetKey(KeyCode.A))
+                {
+                    velocity.x = -1 * baseRunSpeed;
+                }
+                if (Input.GetKey(KeyCode.D))
+                {
+                    velocity.x = baseRunSpeed;
+                }
+
+                CheckCollisionsRight();
+                CheckCollisionsLeft();
+                ApplyVelocityX();
+                ApplyHorizontalCollisions();
+
+                if (velocity.y > 0)
+                    currentState = CharacterState.Jump;
+                if (grounded)
+                    currentState = CharacterState.Idle;
+                break;
+        }
+
+        UpdateCollisionRect();
+    }
+
+
+
+    void Update()
+    {
+        UpdateAugust();
+        //NewNewNewUpdate();
+        return;
+        DrawBoundingRect();
+        ApplyGravity();
+
+        previousSlopeAngle = slopeAngle;
+        prevAscendingSlope = ascendingSlope;
+        prevDescendingSlope = descendingSlope;
+
+        if (Input.GetKey(KeyCode.A))
+        {
+            velocity.x = -1 * baseRunSpeed;
+        }
+        if (Input.GetKey(KeyCode.D))
+        {
+            velocity.x = baseRunSpeed;
+        }
+
+        if (!Input.GetKey(KeyCode.D) && !Input.GetKey(KeyCode.A))
+        {
+            velocity.x = 0;
+            if (ascendingSlope || prevAscendingSlope)
+            {
+                velocity.y = 0;
+            }
+        }
+
+        // if (descendingSlope && prevAscendingSlope)
+        //     velocity.y = 0;
+
+        if (prevAscendingSlope && descendingSlope && grounded)
+        {
+            Debug.Log("grounded");
+        }
+        else if (prevAscendingSlope && descendingSlope && !grounded)
+        {
+            Debug.Log("NOT grounded");
+        }
+
+        if (Input.GetKey(KeyCode.R))
+        {
+            transform.position = new Vector2(-14.65f, 5.54f);
+            velocity = Vector2.zero;
+        }
+
+        if (Input.GetKeyDown(KeyCode.Space) && grounded)
+        {
+            velocity.y = baseJumpVelocity;
+            ascendingSlope = false;
+            descendingSlope = false;
+            grounded = false;
+        }
+
+        CheckCollisionsBottom();
+        CheckCollisionsTop();
+        ApplyVelocityY();
+
+        if (grounded)
+        {
+            velocity.y = Mathf.Max(velocity.y, 0);
+        }
+        else
+        {
+            descendingSlope = false;
+            ascendingSlope = false;
+        }
+
+        if (bottomCollision != null)
+        {
+            transform.position = new Vector2(transform.position.x, Mathf.Max(transform.position.y + yOffset, bottomCollision.collisionPosition.y) - yOffset);
+        }
+
+        if (topCollision != null)
+        {
+            transform.position = new Vector2(transform.position.x, Mathf.Min(transform.position.y + height + yOffset, topCollision.collisionPosition.y) - height - yOffset);
+        }
+
+        CheckCollisionsLeft();
+        CheckCollisionsRight();
+
+
+        if (rightCollision != null)
+        {
+            slopeAngle = rightCollision.segment.angleFromHorizontalDegrees;
+            if (slopeAngle <= groundAngleLimit && topCollision == null)
+            {
+                if (topCollision == null)
+                {
+                    float ascendVelocityY = rightCollision.segment.rightPointingTangent.y * baseRunSpeed;
+                    if (velocity.y <= ascendVelocityY)
+                    {
+                        velocity.y = ascendVelocityY;
+                        velocity.x = rightCollision.segment.rightPointingTangent.x * baseRunSpeed;
+                        ascendingSlope = true;
+                        descendingSlope = false;
+                        grounded = true;
+                    }
+                    else
+                    {
+                        ascendingSlope = false;
+                        grounded = false;
+                    }
+                }
+                ApplyVelocityX();
+            }
+            else
+            {
+                Debug.DrawLine(transform.position, rightCollision.collisionPosition, Color.magenta);
+                if (prevAscendingSlope)
+                    velocity.y = 0;
+                transform.position = new Vector2(Mathf.Min(transform.position.x + width + xOffset, rightCollision.collisionPosition.x) - width - xOffset, transform.position.y);
+                ascendingSlope = false;
+            }
+        }
+
+        else if (leftCollision != null)
+        {
+            slopeAngle = leftCollision.segment.angleFromHorizontalDegrees;
+            if (slopeAngle <= groundAngleLimit && topCollision == null)
+            {
+                if (topCollision == null)
+                {
+                    float ascendVelocityY = leftCollision.segment.leftPointingTangent.y * baseRunSpeed;
+                    if (velocity.y <= ascendVelocityY)
+                    {
+                        velocity.y = ascendVelocityY;
+                        velocity.x = leftCollision.segment.leftPointingTangent.x * baseRunSpeed;
+                        ascendingSlope = true;
+                        descendingSlope = false;
+                        grounded = true;
+                    }
+                    else
+                    {
+                        ascendingSlope = false;
+                        grounded = false;
+                    }
+                }
+                ApplyVelocityX();
+            }
+            else
+            {
+                if (prevAscendingSlope)
+                    velocity.y = 0;
+                transform.position = new Vector2(Mathf.Max(transform.position.x + xOffset, leftCollision.collisionPosition.x) - xOffset, transform.position.y);
+                ascendingSlope = false;
+            }
+        }
+
+        //moving with no walls to the side of us
+        else if (rightCollision == null && leftCollision == null && velocity.x != 0 && bottomCollision != null)
+        {
+            if (prevAscendingSlope)
+            {
+                velocity.y = 0;
+                grounded = true;
+            }
+            //moving on ground, could be descending a slope
+            slopeAngle = bottomCollision.segment.angleFromHorizontalDegrees;
+            Vector2 tangent = bottomCollision.segment.rightPointingTangent;
+            if (velocity.x < 0)
+            {
+                tangent = bottomCollision.segment.leftPointingTangent;
+            }
+            float moveDistance = Mathf.Abs(baseRunSpeed);
+            float descendVelocityY = tangent.y * moveDistance;
+            if (velocity.y != 0 && velocity.y > descendVelocityY)
+            {
+                ascendingSlope = false;
+                descendingSlope = false;
+                grounded = false;
+            }
+            else
+            {
+                velocity.y = descendVelocityY;
+                velocity.x = tangent.x * moveDistance;
+                ascendingSlope = false;
+                descendingSlope = true;
+                grounded = true;
+            }
+            ApplyVelocityX();
+        }
+        else
+        {
+            ApplyVelocityX();
+        }
+
+
+
+        UpdateCollisionRect();
+    }
+}
+
+
+// switch (currentState)
+// {
+//     default:
+//     case CharacterState.Idle:
+//         CheckForCollisionsVertical();
+//         ApplyCollisionsVertical();
+//         ApplyVelocityToTransform();
+//         if (Input.GetKey(KeyCode.A))
+//         {
+//             currentState = CharacterState.Run;
+//             //facing left = false;
+//         }
+
+//         if (Input.GetKey(KeyCode.D))
+//         {
+//             currentState = CharacterState.Run;
+//             //facing left = true;
+//         }
+
+//         if (Input.GetKeyDown(KeyCode.Space))
+//         {
+//             SetVelocityRaw(new Vector2(velocity.x, 10));
+//             grounded = false;
+//         }
+
+//         if (!grounded)
+//         {
+//             if (velocity.y > 0)
+//                 currentState = CharacterState.Jump;
+//             else if (velocity.y < 0)
+//                 currentState = CharacterState.Fall;
+//         }
+//         break;
+//     case CharacterState.Run:
+//         //set velocity based on slope angle
+//         if (Input.GetKey(KeyCode.A))
+//         {
+//             velocity.x = -1 * baseRunSpeed;
+
+//             // if(leftCollision != null){
+//             //     if(Mathf.Abs(leftCollision.collisionPosition.y -  transform.position.y) < stepHeight
+//             //     && leftCollision.segment.angleFromHorizontalDegrees < groundAngleLimit){
+//             //         SetVelocityRaw(baseRunSpeed * leftCollision.segment.leftPointingTangent);
+//             //     }
+//             // }
+//             // else if (bottomCollision.segment.angleFromHorizontalDegrees < groundAngleLimit)
+//             // {
+//             //     SetVelocityRaw(baseRunSpeed * bottomCollision.segment.leftPointingTangent);
+//             // }
+//             //facing left = false;
+//         }
+//         if (Input.GetKey(KeyCode.D))
+//         {
+//             velocity.x = baseRunSpeed;
+//             // if (rightCollision != null)
+//             // {
+//             //     if (Mathf.Abs(rightCollision.collisionPosition.y - transform.position.y) < stepHeight
+//             //     && rightCollision.segment.angleFromHorizontalDegrees < groundAngleLimit)
+//             //     {
+//             //         SetVelocityRaw(baseRunSpeed * rightCollision.segment.leftPointingTangent);
+//             //     }
+//             // }
+//             // //going to the right
+//             // else if (bottomCollision.segment.angleFromHorizontalDegrees < groundAngleLimit)
+//             //     SetVelocityRaw(baseRunSpeed * bottomCollision.segment.rightPointingTangent);
+//             //facing left = true;
+//         }
+//         CheckForCollisionsHorizontal();
+//         ApplyCollisions();
+//         ApplyVelocityToTransform();
+
+//         if (!Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.D))
+//         {
+//             velocity.x = 0;
+//             currentState = CharacterState.Idle;
+//         }
+
+//         if (Input.GetKeyDown(KeyCode.Space))
+//         {
+//             SetVelocityRaw(new Vector2(velocity.x, 10));
+//             grounded = false;
+//         }
+
+//         if (!grounded)
+//         {
+//             if (velocity.y > 0)
+//                 currentState = CharacterState.Jump;
+//             else if (velocity.y < 0)
+//                 currentState = CharacterState.Fall;
+//         }
+
+//         break;
+
+//     case CharacterState.Jump:
+//         CheckForCollisionsVertical();
+//         ApplyCollisionsVertical();
+//         ApplyVelocityToTransform();
+//         if (velocity.y < 0)
+//             currentState = CharacterState.Fall;
+
+//         if (grounded)
+//             currentState = CharacterState.Idle;
+//         break;
+//     case CharacterState.Fall:
+//         CheckForCollisionsVertical();
+//         ApplyCollisionsVertical();
+//         ApplyVelocityToTransform();
+//         if (velocity.y > 0)
+//             currentState = CharacterState.Jump;
+
+//         if (grounded)
+//             currentState = CharacterState.Idle;
+//         break;
+// }

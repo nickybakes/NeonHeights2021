@@ -3816,7 +3816,7 @@ MonoBehaviour:
   bottomCollisionCheckExtension: 1
   staticCollisionMap: {fileID: 0}
   velocity: {x: 0, y: 0}
-  gravity: {x: 0, y: -50}
+  gravity: {x: 0, y: -120}
   enableGravity: 1
   grounded: 0
   onFlatGround: 0
@@ -3826,7 +3826,7 @@ MonoBehaviour:
   trueSpeed: 0
   groundAngleLimit: 60
   baseRunSpeed: 40
-  baseJumpVelocity: 22
+  baseJumpVelocity: 23
   prevGrounded: 0
   ascendingSlope: 0
   descendingSlope: 0
@@ -3839,6 +3839,14 @@ MonoBehaviour:
   groundSegment: {fileID: 0}
   rightSegment: {fileID: 0}
   leftSegment: {fileID: 0}
+  slippingDownSlope: 0
+  timeInAir: 0
+  roadRunnerTimeMax: 0.13
+  holdingJump: 0
+  jumpHoldTimer: 0
+  jumpHoldTimerMax: 0.3
+  jumpsInAir: 0
+  jumpsInAirMax: 2
 --- !u!212 &416792213
 SpriteRenderer:
   m_ObjectHideFlags: 0
