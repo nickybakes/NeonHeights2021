@@ -11,6 +11,8 @@ public class CollisionMap : MonoBehaviour
     [HideInInspector]
     public GameObject collisionVertexPrefab;
     [HideInInspector]
+    public GameObject staticCollisionMapPrefab;
+    [HideInInspector]
     public GameObject collisionSegmentPrefab;
     [HideInInspector]
     public int editorUpdateFrame;
@@ -62,24 +64,20 @@ public class CollisionMap : MonoBehaviour
 
     void Start()
     {
-        if (gameObject.isStatic)
+        GameObject staticCollisionMapPrefab = (GameObject)Resources.Load("Static Collision Map");
+        GameObject newMapObject = Instantiate(staticCollisionMapPrefab);
+        StaticCollisionMap newMap = newMapObject.GetComponent<StaticCollisionMap>();
+
+        List<CollisionSegment> segs = segments;
+        foreach(CollisionSegment segment in segs)
         {
-            GameObject staticCollisionMapPrefab = (GameObject)Resources.Load("Static Collision Map", typeof(GameObject));
-            GameObject newMapObject = Instantiate(staticCollisionMapPrefab);
-
-            StaticCollisionMap newMap = newMapObject.GetComponent<StaticCollisionMap>();
-
-            List<CollisionSegment> segs = segments;
-            foreach(CollisionSegment segment in segs)
+            newMap.AddSegment(segment.a.transform.position, segment.b.transform.position);
+            if (mirrorHorizontal)
             {
-                newMap.AddSegment(segment.a.transform.position, segment.b.transform.position);
-                if (mirrorHorizontal)
-                {
-                    newMap.AddSegment(new Vector2(-segment.b.transform.position.x, segment.b.transform.position.y), new Vector2(-segment.a.transform.position.x, segment.a.transform.position.y));
-                }
+                newMap.AddSegment(new Vector2(-segment.b.transform.position.x, segment.b.transform.position.y), new Vector2(-segment.a.transform.position.x, segment.a.transform.position.y));
             }
-            newMap.Init();
         }
+        newMap.Init();
 
 
         Destroy(gameObject);
@@ -91,8 +89,8 @@ public class CollisionMap : MonoBehaviour
         editorUpdateFrame = 0;
         transform.position = new Vector3(0, 0, 0);
 
-        collisionVertexPrefab = (GameObject)Resources.Load("Collision Vertex", typeof(GameObject));
-        collisionSegmentPrefab = (GameObject)Resources.Load("Collision Segment", typeof(GameObject));
+        collisionVertexPrefab = (GameObject)Resources.Load("Collision Vertex");
+        collisionSegmentPrefab = (GameObject)Resources.Load("Collision Segment");
         
         //vertices = new List<CollisionVertex>();
         AddVertex(Vector2.left*10);

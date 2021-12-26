@@ -192,7 +192,8 @@ public class NeonHeightsCharacterController : NeonHeightsPhysicsObject
     {
         DrawBoundingRect();
 
-
+        if(!isLocalPlayer)
+            return;
 
         CheckCollisionsBottom();
         CheckCollisionsTop();
@@ -235,7 +236,7 @@ public class NeonHeightsCharacterController : NeonHeightsPhysicsObject
 
         if (leftCollision != null && groundCollision != null && leftCollision.segment == groundCollision.segment)
         {
-            Debug.Log("SAME THINGGG ");
+            //Debug.Log("SAME THINGGG ");
         }
 
         if (!grounded && bottomCollision != null && bottomCollision.segment.angleFromHorizontalDegrees > groundAngleLimit && (Mathf.Sign(bottomCollision.segment.downPointingTangent.x) != Mathf.Sign(velocity.x) || Mathf.Abs(velocity.normalized.x) <= Mathf.Abs(bottomCollision.segment.downPointingTangent.x)) && bottomCollision.segment.length > stepHeight)
@@ -320,7 +321,7 @@ public class NeonHeightsCharacterController : NeonHeightsPhysicsObject
             {
                 if (rightCollision != null && rightCollision.segment.topVertex.y < transform.position.y + yOffset + stepHeight && rightCollision.segment.angleFromHorizontalDegrees > groundAngleLimit && transform.position.y < rightCollision.segment.topVertex.y && groundCollision != null)
                 {
-                    Debug.Log("STEP RIGHT");
+                    //Debug.Log("STEP RIGHT");
 
                     SetPositionY(rightCollision.segment.topVertex.y + .1f - yOffset);
                     UpdateCollisionRect();
@@ -333,14 +334,14 @@ public class NeonHeightsCharacterController : NeonHeightsPhysicsObject
                     //hit an unwalkable wall
                     if (rightCollision != null && rightCollision.segment.angleFromHorizontalDegrees > groundAngleLimit && rightCollision.segment.topVertex.y >= transform.position.y + yOffset + stepHeight)
                     {
-                        Debug.Log("a");
+                        //Debug.Log("a");
                         //ApplyHorizontalCollisions();
                     }
                     else
                     {
                         if (!onFlatGround)
                         {
-                            Debug.Log("b");
+                            //Debug.Log("b");
                             velocity.y = groundCollision.segment.rightPointingTangent.y * baseRunSpeed;
                             velocity.x = groundCollision.segment.rightPointingTangent.x * baseRunSpeed;
                             CheckCollisionsTop();
@@ -352,7 +353,7 @@ public class NeonHeightsCharacterController : NeonHeightsPhysicsObject
                         }
                         else
                         {
-                            Debug.Log("c");
+                            //Debug.Log("c");
                             velocity.y = 0;
                             velocity.x = baseRunSpeed;
                             ApplyVelocityToTransform();
@@ -363,7 +364,7 @@ public class NeonHeightsCharacterController : NeonHeightsPhysicsObject
                 else if (grounded && groundCollision != null && groundCollision.segment.angleFromHorizontalDegrees > groundAngleLimit)
                 {
                     // grounded = false;
-                    Debug.Log("d");
+                    //Debug.Log("d");
                     // velocity.y = groundCollision.segment.downPointingTangent.y * 50;
                     // velocity.x = groundCollision.segment.downPointingTangent.x * 50;
                     // ApplyVelocityToTransform();
@@ -372,17 +373,17 @@ public class NeonHeightsCharacterController : NeonHeightsPhysicsObject
                 {
                     ApplyHorizontalCollisions();
                     ApplyVerticalCollisions();
-                    Debug.Log("e");
+                    //Debug.Log("e");
                 }
                 else if (!grounded && rightCollision != null && rightCollision.segment.angleFromHorizontalDegrees > groundAngleLimit)
                 {
                     // ApplyHorizontalCollisions();
                     grounded = false;
-                    Debug.Log("f");
+                    //Debug.Log("f");
                 }
                 else if (!grounded && rightCollision == null)
                 {
-                    Debug.Log("g");
+                    //Debug.Log("g");
                     ApplyVelocityX();
                 }
             }
@@ -391,7 +392,7 @@ public class NeonHeightsCharacterController : NeonHeightsPhysicsObject
             {
                 if (leftCollision != null && leftCollision.segment.topVertex.y < transform.position.y + yOffset + stepHeight && leftCollision.segment.angleFromHorizontalDegrees > groundAngleLimit && transform.position.y < leftCollision.segment.topVertex.y && groundCollision != null)
                 {
-                    Debug.Log("STEP LEFT");
+                    //Debug.Log("STEP LEFT");
                     SetPositionY(leftCollision.segment.topVertex.y + .1f - yOffset);
                     UpdateCollisionRect();
                     CheckCollisionsLeft();
@@ -403,14 +404,14 @@ public class NeonHeightsCharacterController : NeonHeightsPhysicsObject
                     //hit an unwalkable wall
                     if (leftCollision != null && leftCollision.segment.angleFromHorizontalDegrees > groundAngleLimit && leftCollision.segment.topVertex.y >= transform.position.y + yOffset + stepHeight)
                     {
-                        Debug.Log("A");
+                        //Debug.Log("A");
                         //ApplyHorizontalCollisions();
                     }
                     else
                     {
                         if (!onFlatGround)
                         {
-                            Debug.Log("B");
+                            //Debug.Log("B");
                             velocity.y = groundCollision.segment.leftPointingTangent.y * baseRunSpeed;
                             velocity.x = groundCollision.segment.leftPointingTangent.x * baseRunSpeed;
                             CheckCollisionsTop();
@@ -422,7 +423,7 @@ public class NeonHeightsCharacterController : NeonHeightsPhysicsObject
                         }
                         else
                         {
-                            Debug.Log("C");
+                            //Debug.Log("C");
                             velocity.y = 0;
                             velocity.x = -baseRunSpeed;
                             ApplyVelocityToTransform();
@@ -434,26 +435,26 @@ public class NeonHeightsCharacterController : NeonHeightsPhysicsObject
                 else if (grounded && groundCollision != null && groundCollision.segment.angleFromHorizontalDegrees > groundAngleLimit)
                 {
                     // grounded = false;
-                    Debug.Log("D");
+                    //Debug.Log("D");
                     // velocity.y = groundCollision.segment.downPointingTangent.y * 50;
                     // velocity.x = groundCollision.segment.downPointingTangent.x * 50;
                     // ApplyVelocityToTransform();
                 }
                 else if (!grounded && leftCollision != null && leftCollision.segment.angleFromHorizontalDegrees <= groundAngleLimit)
                 {
-                    Debug.Log("E");
+                    //Debug.Log("E");
                     ApplyHorizontalCollisions();
                     ApplyVerticalCollisions();
                 }
                 else if (!grounded && leftCollision != null && leftCollision.segment.angleFromHorizontalDegrees > groundAngleLimit)
                 {
-                    Debug.Log("F");
+                    //Debug.Log("F");
                     grounded = false;
                     //ApplyHorizontalCollisions();
                 }
                 else if (!grounded && leftCollision == null)
                 {
-                    Debug.Log("G");
+                    //Debug.Log("G");
                     ApplyVelocityX();
                 }
             }
@@ -571,7 +572,6 @@ public class NeonHeightsCharacterController : NeonHeightsPhysicsObject
             velocity = Vector2.zero;
         }
 
-        UpdateCollisionRect();
     }
 
 
@@ -582,6 +582,7 @@ public class NeonHeightsCharacterController : NeonHeightsPhysicsObject
     void Update()
     {
         UpdateAugust();
+        UpdateCollisionRect();
         //NewNewNewUpdate();
         return;
     }

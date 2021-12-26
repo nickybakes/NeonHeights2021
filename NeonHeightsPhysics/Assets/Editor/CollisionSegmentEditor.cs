@@ -162,7 +162,16 @@ public class CollisionSegmentEditor : Editor
             Undo.DestroyObjectImmediate(segment.gameObject);
             return;
         }
+
+        if (segment.a.transform == null || segment.b.transform == null)
+        {
+            return;
+        }
         CollisionMap map = segment.transform.gameObject.GetComponentInParent<CollisionMap>();
+        if (map == null)
+        {
+            return;
+        }
         Tools.hidden = false;
         Vector2 aPos = segment.a.transform.position;
         Vector2 bPos = segment.b.transform.position;

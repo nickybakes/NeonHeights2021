@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Mirror;
 
-public class NeonHeightsPhysicsObject : MonoBehaviour
+public class NeonHeightsPhysicsObject : NetworkBehaviour
 {
     private Rect rect;
     private Rect groundRect;
