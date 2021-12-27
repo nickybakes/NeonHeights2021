@@ -41,7 +41,10 @@ public class NeonHeightsPhysicsObject : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-
+        // Vector3 p = new Vector2(1,2);
+        // Vector3 w0 = new Vector2(1, 2);
+        // Vector3 w1 = new Vector2(1, 2);
+        // Vector2 projection = Vector3.Project((p - w0), (w1 - w0)) + w0;
     }
 
     void Awake()
