@@ -1,0 +1,33 @@
+v2019.2.14.4
+
+Note:
+This asset is dependent on Steamworks.NET
+You should install Steamworks.NET via teh Unity Package Manager by selecting the '+' (plus) button and pasting the URL (https://github.com/rlabrecque/Steamworks.NET.git?path=/com.rlabrecque.steamworks.net) into the provided field and clickting the "Add" button to comit.
+This will install Steamworks.NET from the latest available GitHub and can be repeated as required to update the install.
+
+Patch Notes:
+Every interface, componenet, object and enum is now documented with additional documents for each sample scene and common learning topics. This patch is a signifigant update that changes every aspect of the kit and reorganizes many tools. Its recomended that you fully remove older versions before installing this version.
+
+Each API wrapped by the new interfaces manages all available callbacks as Unity Events and callResults as Actions
+
+Changes
+    - Updated the API.Inventory.Client.DeserializeResult to take in an expected user and updated the callback such that it will fail if the user does not match. This lets us account for user's spoofing other user's inventories
+
+Fixed
+    - Updated the DownloadableContentObject editor scripts to correct for an issue that would cause the App ID to be stored as 0 causing otherissues down the road.
+    - Updated the DLC editor to print the App ID as a selectable label
+
+====================
+PLEASE NOTE
+====================
+
+If you have issues where in Steam attempts to launch your game (or Spacewar) when you start simulating in Unity the most likely cause of this issue is that you do not have steam_appid.txt located in the root of your project.
+steam_appid.txt is a simple text file that should be located in the root of your project (beside not in the Asset folder) it should contain only your app ID.
+
+An example of a valid steam_appid.txt follows, only the content between the dashed lines should be used e.g. only the number 480 should be in the file.
+               
+               Start File
+-----------------------------------------------
+480
+-----------------------------------------------
+               End File
